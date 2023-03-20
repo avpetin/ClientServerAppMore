@@ -11,16 +11,16 @@ public class Main {
     public static void main(String[] args) throws IOException {
         int port = 8090;
         String name = null;
-        String isChild;
+        String isChild = null;
         int step = 0;
 
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            while (true) {
-                try (Socket clientSocket = serverSocket.accept();
-                     PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                ) {
-                    System.out.println("New connection accepted");
+            try (Socket clientSocket = serverSocket.accept();
+                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+                 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            ) {
+                System.out.println("New connection accepted");
+                while (true) {
                     switch (step){
                         case 0:
                             out.println("Write your name");
@@ -35,20 +35,25 @@ public class Main {
                             break;
                         case 2:
                             isChild = in.readLine();
-                            if(isChild != null){
-                                if(isChild.equals("yes")) {
-                                    out.println("Welcome to the kids area, " + name + "! Let's play!");
-                                }
-                                else if(isChild.equals("no")) {
-                                    out.println(String.format("Welcome to the adult zone, " + name + "! Have a good rest, or a good working day!"));
-                                }
-                                step++;
+                            if(isChild.equals("yes")) {
+                                  out.println("Welcome to the kids area, " + name + "! Let's play!");
                             }
+                            else if(isChild.equals("no")) {
+                                out.println(String.format("Welcome to the adult zone, " + name + "! Have a good rest, or a good working day!"));
+                            }
+                            else {
+                                out.println("Responce not correct");
+                            }
+                            step++;
+                            break;
+                        default:
+                            out.println("");
                             break;
                     }
-
                 }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
